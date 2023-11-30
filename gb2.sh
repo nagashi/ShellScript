@@ -28,9 +28,15 @@ trap "echo $0: killed @ $(date) ; exit 99" SIGHUP SIGINT SIGTERM
 #
 export BC="tendermint"
 #echo $BC
-export H=/Users/chas/coding-environment/src/shellscipt/projects/$BC
+
+#mask directory
+H=$(pwd)/$BC
 #echo $H
-cd $H || { echo "Error----> Cannot change to $H directory." >&2; exit 2; }
+
+#if directory doesn't exist, make it.
+[ -d "$H" ] || mkdir -p "$H" 2> /dev/null
+
+cd "$H" || { echo "Error----> Cannot change to $H directory." >&2; exit 2; }
 
 touch xx || { echo "Error----> Cannot write to $H directory." >&2; exit 2; }
 rm xx || { echo "Error----> Cannot remove file xx in $H directory." >&2; exit 2; }
@@ -55,8 +61,9 @@ for i in 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 \
 do  
 	NB=$(echo "$NB" | awk '{print $1+1;}')
 	export NB
-	#echo $NB
-	X=$((4175511 + i))
+	# echo "$NB"
+	X=$((4191200 - i))
+	# echo "$X"
 	# shellcheck disable=SC2086
 	curl --connect-timeout 6 --request GET --url https://migaloo-api.polkachu.com/cosmos/base/tendermint/v1beta1/blocks/$X  >$NB 2>/dev/null
 	grep '"code": 3' "$NB" >/dev/null 2>/dev/null
